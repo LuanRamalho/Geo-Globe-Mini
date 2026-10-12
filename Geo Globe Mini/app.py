@@ -1,34 +1,45 @@
 import leafmap.foliumap as leafmap
 
-# Criamos o mapa já limitando o zoom máximo seguro
+
+# Centro do mapa: Rio de Janeiro, próximo ao Cristo Redentor.
+# Impede que o programa adicione um mapa-base padrão.
 m = leafmap.Map(
     center=[-22.9519, -43.2105],
     zoom=15,
     max_zoom=18,
-    tiles=None  # Remove a camada padrão para não gerar conflito
+    tiles=None,
 )
 
-# 1. Camada de Imagem de Satélite (Esri World Imagery)
+
+# Camada de imagens de satélite da Esri.
+# Única camada raster adicionada ao mapa.
+# A camada CartoDB que provocava o aviso foi removida.
 leafmap.folium.TileLayer(
-    tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    attr="Esri",
-    name="Satélite",
-    max_zoom=18
+    tiles=(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/"
+        "World_Imagery/MapServer/tile/{z}/{y}/{x}"
+    ),
+    attr=(
+        "Tiles &copy; Esri, Maxar, Earthstar Geographics, "
+        "and the GIS User Community"
+    ),
+    name="Satélite Esri",
+    max_zoom=18,
+    overlay=False,
+    control=True,
+    show=True,
 ).add_to(m)
 
-# 2. Camada de Rótulos (Nomes de ruas/locais transparentes por cima)
-leafmap.folium.TileLayer(
-    tiles="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png",
-    attr="CartoDB",
-    name="Rótulos",
-    max_zoom=18
-).add_to(m)
 
-# Marcador no Cristo Redentor
+# Marcador no Cristo Redentor.
 m.add_marker(
     location=[-22.9519, -43.2105],
-    popup="Rio de Janeiro - Cristo Redentor"
+    popup="Rio de Janeiro - Cristo Redentor",
 )
 
-# Salva o mapa final
-m.to_html("mapa_rio.html")
+
+# Gera o arquivo HTML do mapa.
+saida = "mapa_rio.html"
+m.to_html(saida)
+
+print(f"Mapa criado com sucesso: {saida}")
